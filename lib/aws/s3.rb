@@ -11,7 +11,7 @@ require 'open-uri'
 $:.unshift(File.dirname(__FILE__))
 require 's3/extensions'
 require_library_or_gem 'builder' unless defined? Builder
-require_library_or_gem 'mime/types' unless defined? MIME::Types
+#require_library_or_gem 'mime/types' unless defined? MIME::Types
 
 require 's3/base'
 require 's3/version'

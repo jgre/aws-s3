@@ -236,7 +236,7 @@ module AWS
           validate_key!(key)
           # Must build path before infering content type in case bucket is being used for options
           path = path!(bucket, key, options)
-          infer_content_type!(key, options)
+          #infer_content_type!(key, options)
           
           put(path, options, data) # Don't call .success? on response. We want to get the etag.
         end

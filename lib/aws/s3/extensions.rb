@@ -49,8 +49,12 @@ class String
   end unless public_method_defined? :underscore
 
   def utf8?
-    scan(/[^\x00-\xa0]/u) { |s| s.unpack('U') }
-    true
+    if self.respond_to? :encoding
+      self.encoding == Encoding::UTF_8
+    else
+      #scan(/[^\x00-\xa0]/u) { |s| s.unpack('U') }
+      true
+    end
   rescue ArgumentError
     false
   end
@@ -58,11 +62,19 @@ class String
   # All paths in in S3 have to be valid unicode so this takes care of 
   # cleaning up any strings that aren't valid utf-8 according to String#utf8?
   def remove_extended!
-    gsub!(/[\x80-\xFF]/) { "%02X" % $&[0] }
+    if respond_to? :encode
+      encode! "UTF-8"
+    else
+      gsub!(/[\x80-\xFF]/) { "%02X" % $&[0] }
+    end
   end
   
   def remove_extended
-    dup.remove_extended!
+    if respond_to? :encode
+      encode! "UTF-8"
+    else
+      dup.remove_extended!
+    end
   end
 end
 
@@ -75,11 +87,11 @@ class CoercibleString < String
   
   def coerce
     case self
-    when 'true':          true
-    when 'false':         false
+    when 'true' then true
+    when 'false'then false
     # Don't coerce numbers that start with zero
-    when  /^[1-9]+\d*$/:   Integer(self)
-    when datetime_format: Time.parse(self)
+    when  /^[1-9]+\d*$/ then   Integer(self)
+    when datetime_format then Time.parse(self)
     else
       self
     end
